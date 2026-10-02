@@ -1,4 +1,4 @@
-package com.example.gymcontrol.ui.recepcion.clientes
+package com.example.gymcontrol.ui.encargado.clientes
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -26,9 +26,8 @@ import com.example.gymcontrol.ui.components.GymScaffold
 import com.example.gymcontrol.ui.theme.GymColors
 
 private val CardBorder = Brush.linearGradient(listOf(GymColors.Purple, GymColors.Gold))
-private val RECEPCION_SECTIONS = listOf("Home", "Clientes", "Solicitudes")
+private val ADMIN_SECTIONS = listOf("Dashboard", "Clientes", "Personal", "Servicios", "Gastos", "Reportes")
 
-// Tamaño compartido por el badge (Activo/Inactivo), el lápiz y el botón "Renovar"
 private val ActionButtonWidth = 96.dp
 private val ActionButtonHeight = 36.dp
 
@@ -44,7 +43,7 @@ fun ClientesScreen(onNavigate: (String) -> Unit = {}) {
 
     GymScaffold(
         currentSection = "Clientes",
-        sections = RECEPCION_SECTIONS,
+        sections = ADMIN_SECTIONS,
         onNavigate = onNavigate
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -109,7 +108,7 @@ fun ClientesScreen(onNavigate: (String) -> Unit = {}) {
                 if (clients.isEmpty()) {
                     item {
                         Text(
-                            text = "No se encontraron com.example.gymcontrol.ui.encargado.clientes",
+                            text = "No se encontraron clientes",
                             color = GymColors.TextSecondary,
                             fontSize = 14.sp,
                             modifier = Modifier
@@ -176,7 +175,6 @@ private fun ClientCard(
             StatusBadge(isActive = isActive)
             Spacer(Modifier.height(10.dp))
 
-            // Activo -> lápiz | Inactivo -> botón "Renovar" (mismo tamaño)
             if (isActive) {
                 IconSquareButton(
                     icon = Icons.Filled.Edit,
