@@ -1,4 +1,4 @@
-package com.example.gymcontrol.ui.recepcion.clientes
+package com.example.gymcontrol.ui.encargado.clientes
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -26,9 +26,8 @@ import com.example.gymcontrol.ui.components.GymScaffold
 import com.example.gymcontrol.ui.theme.GymColors
 
 private val CardBorder = Brush.linearGradient(listOf(GymColors.Purple, GymColors.Gold))
-private val RECEPCION_SECTIONS = listOf("Home", "Clientes", "Solicitudes")
+private val ADMIN_SECTIONS = listOf("Dashboard", "Clientes", "Personal", "Servicios", "Gastos", "Reportes")
 
-// Tamaño compartido por el badge (Activo/Inactivo), el lápiz y el botón "Renovar"
 private val ActionButtonWidth = 96.dp
 private val ActionButtonHeight = 36.dp
 
@@ -37,19 +36,14 @@ fun ClientesScreen(onNavigate: (String) -> Unit = {}) {
     var search by remember { mutableStateOf("") }
     var showForm by remember { mutableStateOf(false) }
     var editingIndex by remember { mutableStateOf<Int?>(null) }
-    // Solo para la demo: clientes renovados en esta sesión. TODO: quitar cuando se guarde en Supabase
-    val renewed = remember { mutableStateListOf<String>() }
 
     val clients = GymApp.repository.users()
         .filter { it.role == UserRole.CLIENTE }
         .filter { it.name.contains(search, true) || (it.membershipNumber ?: "").contains(search, true) }
 
-    // Cliente que se está editando (null cuando se crea uno nuevo)
-    val editingClient = editingIndex?.let { clients.getOrNull(it) }
-
     GymScaffold(
         currentSection = "Clientes",
-        sections = RECEPCION_SECTIONS,
+        sections = ADMIN_SECTIONS,
         onNavigate = onNavigate
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -98,22 +92,16 @@ fun ClientesScreen(onNavigate: (String) -> Unit = {}) {
                 }
 
                 itemsIndexed(clients) { index, client ->
-                    // Identifica al cliente: su membresía, o su nombre si no tiene
-                    val clientKey = client.membershipNumber ?: client.name
-
                     ClientCard(
                         name = client.name,
                         membership = client.membershipNumber ?: "—",
                         registrationDate = client.registrationDate,
-                        isActive = client.status.name == "ACTIVO" || clientKey in renewed,
+                        isActive = client.status.name == "ACTIVO",
                         onEdit = {
                             editingIndex = index
                             showForm = true
                         },
-                        onRenovar = {
-                            // TODO: registrar la renovación y el pago en Supabase
-                            if (clientKey !in renewed) renewed.add(clientKey)
-                        }
+                        onRenovar = { /* TODO: lógica de renovación */ }
                     )
                 }
 
@@ -133,17 +121,8 @@ fun ClientesScreen(onNavigate: (String) -> Unit = {}) {
             }
 
             if (showForm) {
-                // Separa "Ana López" en nombre y apellido para llenar el formulario
-                val nameParts = (editingClient?.name ?: "").trim().split(" ", limit = 2)
-
                 ClientFormDialog(
                     isEditing = editingIndex != null,
-                    initialName = nameParts.getOrElse(0) { "" },
-                    initialLastName = nameParts.getOrElse(1) { "" },
-                    // TODO: pasar el teléfono y el plan del cliente cuando el modelo los tenga
-                    initialPhone = "",
-                    initialEmail = editingClient?.let { "${it.email}" } ?: "",
-                    initialPlan = null,
                     onDismiss = {
                         showForm = false
                         editingIndex = null
@@ -196,7 +175,6 @@ private fun ClientCard(
             StatusBadge(isActive = isActive)
             Spacer(Modifier.height(10.dp))
 
-            // Activo -> lápiz | Inactivo -> botón "Renovar" (mismo tamaño)
             if (isActive) {
                 IconSquareButton(
                     icon = Icons.Filled.Edit,

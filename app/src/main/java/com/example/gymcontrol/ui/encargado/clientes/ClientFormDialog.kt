@@ -1,4 +1,4 @@
-package com.example.gymcontrol.ui.recepcion.clientes
+package com.example.gymcontrol.ui.encargado.clientes
 
 import android.util.Patterns
 import androidx.compose.foundation.background
@@ -82,7 +82,7 @@ fun ClientFormDialog(
                 Text(
                     text = if (isEditing) "Editar cliente" else "Nuevo cliente",
                     color = GymColors.TextPrimary,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = onDismiss) {
